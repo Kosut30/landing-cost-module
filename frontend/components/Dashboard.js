@@ -60,7 +60,7 @@ const Dashboard = () => {
       setLandingCostChange(percentageChange.toFixed(2));
       setAverageLandingCostChange(percentageAverageChange.toFixed(2));
     } catch (error) {
-      // console.error('Error fetching landing costs', error);
+      console.error('Error fetching landing costs', error);
     }
   };
 
