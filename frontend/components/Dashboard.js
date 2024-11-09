@@ -18,7 +18,7 @@ const Dashboard = () => {
   // Fetch data functions
   const fetchLandingCosts = async () => {
     try {
-      const landingCostsResponse = await axios.get('http://192.168.46.155:5000/api/imports/landing-cost-trend');
+      const landingCostsResponse = await axios.get('http://172.20.10.2:5000/api/imports/landing-cost-trend');
 
       const currentYear = new Date().getFullYear();
 
@@ -66,7 +66,7 @@ const Dashboard = () => {
 
   const fetchNumberOfImports = async () => {
     try {
-      const importsResponse = await axios.get('http://192.168.46.155:5000/api/imports/');
+      const importsResponse = await axios.get('http://172.20.10.2:5000/api/imports/');
       const currentYear = new Date().getFullYear();
       const previousYear = currentYear - 1;
 
@@ -102,7 +102,7 @@ const Dashboard = () => {
 
   const fetchRecentImports = async () => {
     try {
-      const importsResponse = await axios.get('http://192.168.46.155:5000/api/imports');
+      const importsResponse = await axios.get('http://172.20.10.2:5000/api/imports');
       const sortedImports = importsResponse.data
         .sort((a, b) => new Date(b.import_date) - new Date(a.import_date))
         .slice(0, 5);
