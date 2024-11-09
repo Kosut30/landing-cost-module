@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+        }
+
+        .sidebar .nav-link {
+            color: white;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #007bff;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+            overflow: auto;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .floating-btn:hover {
+            background-color: #218838;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        /* Adjust chart size */
+        #analyticsChart {
+            width: 100%;
+            height: 300px;
+        }
+
+        .chart-container {
+            margin-top: 40px;
+        }
+
+        /* Adjust chart size for other charts */
+        .supplier-comparison,
+        .category-analysis {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3 class="text-center text-white">Navigation</h3>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/analytics">Analytics</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="text-center">Analytics Module</h2>
+
+        <!-- Landing Cost Over Time Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Landing Cost Over Time</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="analyticsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Supplier Comparison Chart -->
+        <div class="card chart-container">
+            <div class="card-header">
+                <h4>Supplier Comparison</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="supplierComparisonChart" class="supplier-comparison"></canvas>
+            </div>
+        </div>
+
+        <!-- Product Category Analysis Chart -->
+        <div class="card chart-container">
+            <div class="card-header">
+                <h4>Product Category Analysis</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryAnalysisChart" class="category-analysis"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-btn" data-toggle="modal" data-target="#addImportModal">
+        <span>+</span>
+    </button>
+
+    <!-- Add New Import Modal -->
+    <div class="modal fade" id="addImportModal" tabindex="-1" aria-labelledby="addImportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addImportModalLabel">Add New Import</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addImportForm">
+                        <div class="form-group">
+                            <label for="product_name">Product Name</label>
+                            <input type="text" class="form-control" id="product_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplier_name">Supplier Name</label>
+                            <input type="text" class="form-control" id="supplier_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchase_price">Purchase Price</label>
+                            <input type="number" class="form-control" id="purchase_price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="shipping_cost">Shipping Cost</label>
+                            <input type="number" class="form-control" id="shipping_cost" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="import_duties">Import Duties</label>
+                            <input type="number" class="form-control" id="import_duties" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <input type="text" class="form-control" id="category" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Import</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch analytics data for Landing Cost Over Time, Supplier Comparison, and Product Category Analysis
+        async function fetchAnalyticsData() {
+            try {
+                // Fetch landing cost trend data
+                const landingCostsResponse = await fetch('/api/imports/landing-cost-trend');
+                const landingCostsData = await landingCostsResponse.json();
+
+                // Prepare data for the landing cost over time chart
+                const labels = landingCostsData.map(item => new Date(item.date).toLocaleDateString());
+                const landingCosts = landingCostsData.map(item => item.total_cost);
+
+                // Render the landing cost over time chart
+                const ctx = document.getElementById('analyticsChart').getContext('2d');
+                const analyticsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Landing Costs Over Time',
+                            data: landingCosts,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Cost ($)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching landing cost data:', error);
+            }
+        }
+
+        // Fetch Supplier Comparison Data from the API
+        async function fetchSupplierComparisonData() {
+            try {
+                // Fetch data from the API endpoint
+                const response = await fetch('/api/supplier-comparison');
+                const supplierComparisonData = await response.json();
+
+                // Generate random colors for each supplier
+                const generateRandomColor = () => {
+                    const letters = '0123456789ABCDEF';
+                    let color = '#';
+                    for (let i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                };
+
+                // Prepare data for the scatter plot
+                const suppliers = supplierComparisonData.map(item => item.supplier_name);
+                const imports = supplierComparisonData.map(item => item.number_of_imports);
+                const totalCosts = supplierComparisonData.map(item => parseFloat(item.total_cost)); // Convert cost to float
+                const colors = suppliers.map(() => generateRandomColor());
+
+                // Render the scatter plot for supplier comparison
+                const ctx = document.getElementById('supplierComparisonChart').getContext('2d');
+                const supplierComparisonChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        labels: suppliers,
+                        datasets: suppliers.map((supplier, index) => ({
+                            label: supplier,
+                            data: [{
+                                x: imports[index],  // Number of imports on the x-axis
+                                y: totalCosts[index]  // Total cost on the y-axis
+                            }],
+                            backgroundColor: colors[index],
+                            borderColor: colors[index],
+                            borderWidth: 1
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Number of Imports'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Total Cost ($)'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching supplier comparison data:', error);
+            }
+        }
+
+        // Fetch Product Category Analysis Data from the API
+        async function fetchProductCategoryAnalysisData() {
+            try {
+                const response = await fetch('/api/product-category-analysis');
+                const productCategoryData = await response.json();
+
+                // Process the data for chart rendering
+                const categoryLabels = productCategoryData.map(item => item.category);
+                const categoryAverageCosts = productCategoryData.map(item => item.average_cost);
+                const categoryTotalImports = productCategoryData.map(item => item.total_imports);
+
+                // Render the category analysis chart
+                const ctx = document.getElementById('categoryAnalysisChart').getContext('2d');
+                const categoryAnalysisChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: categoryLabels,
+                        datasets: [
+                            {
+                                label: 'Average Cost ($)',
+                                data: categoryAverageCosts,
+                                backgroundColor: '#1f77b4',
+                            },
+                            {
+                                label: 'Total Imports',
+                                data: categoryTotalImports,
+                                backgroundColor: '#ff7f0e',
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Value ($)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching product category analysis data:', error);
+            }
+        }
+
+        document.getElementById('addImportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Prepare the data from the form
+            const newImport = {
+                product_name: document.getElementById('product_name').value,
+                supplier_name: document.getElementById('supplier_name').value,
+                purchase_price: document.getElementById('purchase_price').value,
+                shipping_cost: document.getElementById('shipping_cost').value,
+                import_duties: document.getElementById('import_duties').value,
+                category: document.getElementById('category').value
+            };
+
+            try {
+                // Send POST request to Flask route '/add'
+                const response = await fetch('/api/imports/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newImport)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Successfully added, hide the modal and refresh the imports table
+                    $('#addImportModal').modal('hide');
+                    alert(result.message || 'Import added successfully!');
+                } else {
+                    // Error occurred, display the error message
+                    alert(result.error || 'Failed to add import!');
+                }
+            } catch (error) {
+                console.error('Error adding import:', error);
+                alert('An unexpected error occurred.');
+            }
+        });
+
+
+        // Call the functions to fetch and render data
+        fetchAnalyticsData();
+        fetchSupplierComparisonData();
+        fetchProductCategoryAnalysisData();
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
