@@ -8,7 +8,7 @@ A web and mobile application to track the landing costs of imported products, bu
 - **Imports Management**: Add new imports, view all imports.
 - **Landing Cost Trends**: Track and visualize landing cost trends over time.
 - **Analytics**: Compare suppliers, analyze product categories by total imports and average cost.
-- **Floating Menu**: Quick access to app features on mobile.
+- **Floating Menu**: Quick access to app features on mobile and web.
 
 ## Tech Stack
 
