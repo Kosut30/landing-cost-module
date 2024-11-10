@@ -11,8 +11,8 @@ def create_app():
     CORS(app)
 
     # MySQL configuration
-    app.config["MYSQL_USER"] = "muchiri"
-    app.config["MYSQL_PASSWORD"] = "digit"
+    app.config["MYSQL_USER"] = "evans"
+    app.config["MYSQL_PASSWORD"] = "evans"
     app.config["MYSQL_DB"] = "landing_costs_db"
     app.config["MYSQL_HOST"] = "localhost"
     app.config["MYSQL_CURSORCLASS"] = "DictCursor"

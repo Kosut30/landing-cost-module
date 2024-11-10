@@ -38,5 +38,5 @@ INSERT INTO `imports` (`id`, `product_name`, `supplier_name`, `purchase_price`, 
 (37, 'Fitness Tracker', 'Fitwear Inc', 75.00, 10.00, 3.00, 88.00, 'Clothing', '2024-10-10 09:55:00'),
 (38, 'Electric Kettle', 'HomeStyle Goods', 40.00, 10.00, 3.00, 53.00, 'Home Appliances', '2024-01-05 08:30:00'),
 (39, 'Electric Fan', 'CoolBreeze Ltd', 70.00, 15.00, 5.00, 90.00, 'Home Appliances', '2024-01-20 10:45:00'),
-(40, 'Sofa', 'Furniture Solutions', 800.00, 120.00, 50.00, 970.00, 'Furniture', '2024-02-03 14:30:00'),
+(40, 'Sofa', 'Furniture Solutions', 800.00, 120.00, 50.00, 970.00, 'Furniture', '2024-02-03 14:30:00');
 -- Add more records here up to 100 following the same pattern...
