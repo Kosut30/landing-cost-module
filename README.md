@@ -23,7 +23,7 @@ A web and mobile application to track the landing costs of imported products, bu
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.11 
 - MySQL 5.7 or higher
 
 ### Installation
@@ -31,18 +31,22 @@ A web and mobile application to track the landing costs of imported products, bu
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/landing-cost-tracker.git
+   git clone https://github.com/Kosut30/landing-cost-module.git
    cd landing-cost-tracker
    ```
 
 2. Create and activate a virtual environment (optional but recommended):
 
    ```bash
-   python3 -m venv venv
+   py -m venv venv
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    ```
 
 3. Install the required Python dependencies:
+
+   ```bash
+   cd backend
+   ```
 
    ```bash
    pip install -r requirements.txt
@@ -55,7 +59,7 @@ A web and mobile application to track the landing costs of imported products, bu
 5. Run the Flask application:
 
    ```bash
-   python app.py
+   py app.py
    ```
 
    The app will be available at `http://localhost:5000`.
@@ -166,6 +170,29 @@ This table stores information about imports, including product details, costs, a
 - `Analytics` → View supplier and product category analytics.
 
 ---
+
+## Authors
+ 
+- **Ali** – Backend Developer and Deployment Specialist  
+  Led the setup and maintenance of the Flask backend, ensuring reliable API functionality and handling staging deployments.
+ 
+- **Chandra** – Database Architect and Deployment Lead  
+  Designed the MySQL database schema and managed production deployment to ensure data integrity and performance.
+ 
+- **Kenneth** – Full-Stack Developer  
+  Developed backend APIs and integrated them with the frontend, bridging data processing and user interface.
+ 
+- **Brenda** – Project Manager and QA Lead  
+  Coordinated the project timeline in JIRA, organized sprint tasks, and led quality assurance efforts for system reliability.
+ 
+- **Evans** – Frontend Integration Lead and UX Designer  
+  Integrated backend APIs with the React Native frontend, ensuring a seamless user experience.
+ 
+- **Jain** – UI/UX Designer  
+  Designed a user-friendly, mobile-responsive interface for smooth interaction.
+ 
+- **Lhap** – End-to-End Testing Specialist  
+  Managed end-to-end testing to verify functionality across backend and frontend, ensuring system components worked harmoniously.
 
 ## Notes
 
