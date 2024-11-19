@@ -15,7 +15,7 @@ const Analytics = () => {
         try {
             setLoading(true);
             // Fetch Landing Costs Over Time
-            const landingCostsResponse = await axios.get('http://192.168.46.155:5000/api/imports/landing-cost-trend');
+            const landingCostsResponse = await axios.get('http://192.168.1.7:5000/api/imports/landing-cost-trend');
             const formattedLandingCosts = landingCostsResponse.data.map(item => ({
                 x: new Date(item.date),
                 y: parseFloat(item.total_cost)
@@ -23,7 +23,7 @@ const Analytics = () => {
             setLandingCosts(formattedLandingCosts);
 
             // Fetch Supplier Comparison
-            const supplierComparisonResponse = await axios.get('http://192.168.46.155:5000/api/supplier-comparison');
+            const supplierComparisonResponse = await axios.get('http://192.168.1.7:5000/api/supplier-comparison');
             const formattedSupplierComparison = supplierComparisonResponse.data.map(item => ({
                 x: parseFloat(item.total_cost),
                 y: parseInt(item.number_of_imports),
@@ -33,7 +33,7 @@ const Analytics = () => {
             setSupplierComparison(formattedSupplierComparison);
 
             // Fetch Product Category Analysis
-            const productCategoryResponse = await axios.get('http://192.168.46.155:5000/api/product-category-analysis');
+            const productCategoryResponse = await axios.get('http://192.168.1.7:5000/api/product-category-analysis');
             setProductCategoryAnalysis(productCategoryResponse.data);
         } catch (error) {
             console.error('Error fetching analytics data', error);

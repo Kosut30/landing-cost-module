@@ -32,11 +32,7 @@ const ImportsManagement = () => {
 
     try {
       // Make a POST request to the backend to add the new import
-<<<<<<< HEAD
-      await axios.post('http://172.20.10.2:5000/api/imports/add', newImport);
-=======
-      await axios.post('http://192.168.83.155:5000/api/imports/add', newImport);
->>>>>>> frontend-dev
+      await axios.post('http://192.168.1.7:5000/api/imports/add', newImport);
       Alert.alert('Success', 'Import added successfully!');
 
       // Clear form inputs after submission
