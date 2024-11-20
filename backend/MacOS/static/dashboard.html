@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+        }
+
+        .sidebar .nav-link {
+            color: white;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #007bff;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+            overflow: auto;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .floating-btn:hover {
+            background-color: #218838;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        /* Smaller Pie Chart Size */
+        #costBreakdownChart {
+            width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3 class="text-center text-white">Navigation</h3>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/analytics">Analytics</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="text-center">Landing Costs Module</h2>
+
+        <!-- Summary Section -->
+        <div class="card my-4">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>Summary</h4>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h5 class="font-weight-bold">Total Landing Costs</h5>
+                        <p id="totalLandingCost" class="display-4 text-success">$0</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 class="font-weight-bold">Number of Imports</h5>
+                        <p id="numberOfImports" class="display-4 text-info">0</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 class="font-weight-bold">Average Landing Cost</h5>
+                        <p id="averageLandingCost" class="display-4 text-warning">$0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Landing Costs Trend Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Landing Cost Trend</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="landingCostTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Imports Table -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Recent Imports</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Supplier Name</th>
+                            <th>Purchase Price</th>
+                            <th>Shipping Cost</th>
+                            <th>Import Duties</th>
+                            <th>Total Landing Cost</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody id="importsTableBody">
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add New Import Modal -->
+        <div class="modal fade" id="addImportModal" tabindex="-1" aria-labelledby="addImportModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addImportModalLabel">Add New Import</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addImportForm">
+                            <div class="form-group">
+                                <label for="product_name">Product Name</label>
+                                <input type="text" class="form-control" id="product_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="supplier_name">Supplier Name</label>
+                                <input type="text" class="form-control" id="supplier_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="purchase_price">Purchase Price</label>
+                                <input type="number" class="form-control" id="purchase_price" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="shipping_cost">Shipping Cost</label>
+                                <input type="number" class="form-control" id="shipping_cost" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="import_duties">Import Duties</label>
+                                <input type="number" class="form-control" id="import_duties" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <input type="text" class="form-control" id="category" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Import</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Breakdown Pie Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Cost Breakdown</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="costBreakdownChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-btn" data-toggle="modal" data-target="#addImportModal">
+        <span>+</span>
+    </button>
+
+    <script>
+        async function fetchLandingCostTrend() {
+            try {
+                // Fetch landing cost trend data
+                const landingCostsResponse = await fetch('/api/imports/landing-cost-trend');
+                const landingCostsData = await landingCostsResponse.json();
+
+                // Prepare data for the landing cost over time chart
+                const labels = landingCostsData.map(item => new Date(item.date).toLocaleDateString());
+                const landingCosts = landingCostsData.map(item => item.total_cost);
+
+                // Render the landing cost over time chart
+                const ctx = document.getElementById('landingCostTrendChart').getContext('2d');
+                const analyticsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Landing Costs Over Time',
+                            data: landingCosts,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Cost ($)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching landing cost data:', error);
+            }
+        }
+
+        // Helper function to generate a list of all months between the first and last dates in the data
+        function getAllMonths(data) {
+            const dateArray = data.map(entry => new Date(entry.date));
+
+            const minDate = new Date(Math.min(...dateArray));
+            const maxDate = new Date(Math.max(...dateArray));
+
+            const months = [];
+            let currentDate = minDate;
+
+            while (currentDate <= maxDate) {
+                const monthYear = currentDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+                months.push(monthYear);
+
+                // Move to the next month
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+
+            return months;
+        }
+
+
+        async function fetchImports() {
+            const response = await fetch('/api/imports/recent');
+            const data = await response.json();
+            const tableBody = document.getElementById('importsTableBody');
+            tableBody.innerHTML = '';
+
+            data.forEach(importItem => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${importItem.product_name}</td>
+                    <td>${importItem.supplier_name}</td>
+                    <td>${importItem.purchase_price}</td>
+                    <td>${importItem.shipping_cost}</td>
+                    <td>${importItem.import_duties}</td>
+                    <td>${importItem.total_landing_cost}</td>
+                    <td>${importItem.category}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function fetchAndRenderCostBreakdown() {
+            const response = await fetch('/api/imports');
+            const recentImports = await response.json();
+
+            const costBreakdown = recentImports.reduce((acc, importItem) => {
+                acc.purchasePrice += parseFloat(importItem.purchase_price) || 0;
+                acc.shippingCost += parseFloat(importItem.shipping_cost) || 0;
+                acc.importDuties += parseFloat(importItem.import_duties) || 0;
+                return acc;
+            }, { purchasePrice: 0, shippingCost: 0, importDuties: 0 });
+
+            const totalCost = costBreakdown.purchasePrice + costBreakdown.shippingCost + costBreakdown.importDuties;
+
+            const ctx = document.getElementById('costBreakdownChart').getContext('2d');
+            const costBreakdownChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Purchase Price', 'Shipping Cost', 'Import Duties'],
+                    datasets: [{
+                        data: [
+                            costBreakdown.purchasePrice,
+                            costBreakdown.shippingCost,
+                            costBreakdown.importDuties
+                        ],
+                        backgroundColor: ["#1f77b4", "#ff7f0e", "#2ca02c"]
+                    }]
+                }
+            });
+        }
+
+        async function fetchAllImports() {
+            const response = await fetch('/api/imports');
+            const data = await response.json();
+
+            let totalLandingCost = 0;
+            let numberOfImports = data.length;
+
+            // Calculate total landing cost without updating the table
+            data.forEach(importItem => {
+                const landingCost = parseFloat(importItem.total_landing_cost);
+                totalLandingCost += landingCost;
+            });
+
+            // Calculate average landing cost
+            const averageLandingCost = totalLandingCost / numberOfImports;
+
+            // Update the summary section with proper comma formatting
+            document.getElementById('totalLandingCost').textContent = `$${totalLandingCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('numberOfImports').textContent = numberOfImports.toLocaleString();
+            document.getElementById('averageLandingCost').textContent = `$${averageLandingCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+
+
+
+        document.getElementById('addImportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Prepare the data from the form
+            const newImport = {
+                product_name: document.getElementById('product_name').value,
+                supplier_name: document.getElementById('supplier_name').value,
+                purchase_price: document.getElementById('purchase_price').value,
+                shipping_cost: document.getElementById('shipping_cost').value,
+                import_duties: document.getElementById('import_duties').value,
+                category: document.getElementById('category').value
+            };
+
+            try {
+                // Send POST request to Flask route '/add'
+                const response = await fetch('/api/imports/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newImport)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Successfully added, hide the modal and refresh the imports table
+                    $('#addImportModal').modal('hide');
+                    fetchImports();
+                    fetchAndRenderCostBreakdown();
+                    alert(result.message || 'Import added successfully!');
+                } else {
+                    // Error occurred, display the error message
+                    alert(result.error || 'Failed to add import!');
+                }
+            } catch (error) {
+                console.error('Error adding import:', error);
+                alert('An unexpected error occurred.');
+            }
+        });
+
+        // Initial fetch and render
+        fetchLandingCostTrend();
+        fetchAllImports();
+        fetchAndRenderCostBreakdown();
+        fetchImports();
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
